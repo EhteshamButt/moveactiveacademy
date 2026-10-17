@@ -23,39 +23,27 @@ import { ContactModule } from './contact/contact.module';
     ConfigModule.forRoot({ isGlobal: true }),
 
     TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (config: ConfigService) => {
-        const host = config.get<string>('DB_HOST') || process.env.DB_HOST;
-        const port = Number(config.get('DB_PORT') || process.env.DB_PORT || 5432);
-        const username = config.get<string>('DB_USERNAME') || process.env.DB_USERNAME;
-        const password = String(config.get('DB_PASSWORD') ?? process.env.DB_PASSWORD ?? '');
-        const database = config.get<string>('DB_NAME') || process.env.DB_NAME || 'postgres';
-        if (!host || !username || !password) {
-          throw new Error(`Missing DB env vars — host:${host} user:${username} pass:${password ? '***' : 'MISSING'}`);
-        }
-        return ({
-        type: 'postgres' as const,
-        host,
-        port,
-        username,
-        password,
-        database,
-        entities: [Member, Course, Enrollment, Certificate, Trainer, Review, Contact],
-        synchronize: false,
-        ssl: { rejectUnauthorized: false },
-        logging: false,
-        connectTimeoutMS: 8000,
-        retryAttempts: 1,
-        retryDelay: 500,
-        extra: {
-          max: 2,
-          connectionTimeoutMillis: 8000,
-          idleTimeoutMillis: 30000,
-          keepAlive: true,
-          keepAliveInitialDelayMillis: 0,
-        },
-        });
+      useFactory: () => {
+        const url = process.env.DATABASE_URL;
+        if (!url) throw new Error('DATABASE_URL environment variable is not set');
+        return {
+          type: 'postgres' as const,
+          url,
+          entities: [Member, Course, Enrollment, Certificate, Trainer, Review, Contact],
+          synchronize: false,
+          ssl: { rejectUnauthorized: false },
+          logging: false,
+          connectTimeoutMS: 8000,
+          retryAttempts: 1,
+          retryDelay: 500,
+          extra: {
+            max: 2,
+            connectionTimeoutMillis: 8000,
+            idleTimeoutMillis: 30000,
+            keepAlive: true,
+            keepAliveInitialDelayMillis: 0,
+          },
+        };
       },
     }),
 
