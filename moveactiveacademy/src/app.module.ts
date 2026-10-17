@@ -3,6 +3,9 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { User } from './users/user.entity';
+import { UsersModule } from './users/users.module';
+import { AuthModule } from './auth/auth.module';
 import { Member } from './members/member.entity';
 import { Course } from './courses/course.entity';
 import { Enrollment } from './enrollments/enrollment.entity';
@@ -29,7 +32,7 @@ import { ContactModule } from './contact/contact.module';
         return {
           type: 'postgres' as const,
           url,
-          entities: [Member, Course, Enrollment, Certificate, Trainer, Review, Contact],
+          entities: [User, Member, Course, Enrollment, Certificate, Trainer, Review, Contact],
           synchronize: false,
           ssl: { rejectUnauthorized: false },
           logging: false,
@@ -47,6 +50,8 @@ import { ContactModule } from './contact/contact.module';
       },
     }),
 
+    UsersModule,
+    AuthModule,
     MembersModule,
     CoursesModule,
     EnrollmentsModule,
