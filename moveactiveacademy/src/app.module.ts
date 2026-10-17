@@ -25,13 +25,22 @@ import { ContactModule } from './contact/contact.module';
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (config: ConfigService) => ({
-        type: 'postgres',
-        host: config.get<string>('DB_HOST'),
-        port: config.get<number>('DB_PORT'),
-        username: config.get<string>('DB_USERNAME'),
-        password: config.get<string>('DB_PASSWORD'),
-        database: config.get<string>('DB_NAME'),
+      useFactory: (config: ConfigService) => {
+        const host = config.get<string>('DB_HOST') || process.env.DB_HOST;
+        const port = Number(config.get('DB_PORT') || process.env.DB_PORT || 5432);
+        const username = config.get<string>('DB_USERNAME') || process.env.DB_USERNAME;
+        const password = String(config.get('DB_PASSWORD') ?? process.env.DB_PASSWORD ?? '');
+        const database = config.get<string>('DB_NAME') || process.env.DB_NAME || 'postgres';
+        if (!host || !username || !password) {
+          throw new Error(`Missing DB env vars — host:${host} user:${username} pass:${password ? '***' : 'MISSING'}`);
+        }
+        return ({
+        type: 'postgres' as const,
+        host,
+        port,
+        username,
+        password,
+        database,
         entities: [Member, Course, Enrollment, Certificate, Trainer, Review, Contact],
         synchronize: false,
         ssl: { rejectUnauthorized: false },
@@ -46,7 +55,8 @@ import { ContactModule } from './contact/contact.module';
           keepAlive: true,
           keepAliveInitialDelayMillis: 0,
         },
-      }),
+        });
+      },
     }),
 
     MembersModule,
