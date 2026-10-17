@@ -1,11 +1,11 @@
 [build]
-  command = "npm run build"
+  command = "npm install --include=dev && npm run build"
   functions = "netlify/functions"
   publish = "public"
 
 [build.environment]
   NODE_VERSION = "20"
-  NPM_FLAGS = "--legacy-peer-deps"
+  NPM_FLAGS = "--include=dev"
 
 # Route all requests through the NestJS serverless function
 [[redirects]]
