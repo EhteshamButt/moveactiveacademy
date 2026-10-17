@@ -16,7 +16,7 @@ async function getHandler() {
 
     const expressApp = express();
     const adapter = new ExpressAdapter(expressApp);
-    const app = await NestFactory.create(AppModule, adapter, { logger: ['error', 'warn'] });
+    const app = await NestFactory.create(AppModule, adapter, { logger: ['error', 'warn'], abortOnError: false });
     app.enableCors({ origin: '*' });
     await app.init();
     cachedHandler = serverless(expressApp);
