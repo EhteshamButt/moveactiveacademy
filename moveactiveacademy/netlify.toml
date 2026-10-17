@@ -7,6 +7,9 @@
   NODE_VERSION = "20"
   NPM_FLAGS = "--include=dev"
 
+[functions]
+  timeout = 26
+
 # Route all requests through the NestJS serverless function
 [[redirects]]
   from = "/*"

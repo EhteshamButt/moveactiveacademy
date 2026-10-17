@@ -33,9 +33,15 @@ import { ContactModule } from './contact/contact.module';
         password: config.get<string>('DB_PASSWORD'),
         database: config.get<string>('DB_NAME'),
         entities: [Member, Course, Enrollment, Certificate, Trainer, Review, Contact],
-        synchronize: true,
+        synchronize: config.get<string>('NODE_ENV') !== 'production',
         ssl: { rejectUnauthorized: false },
         logging: false,
+        connectTimeoutMS: 10000,
+        extra: {
+          max: 2,
+          connectionTimeoutMillis: 10000,
+          idleTimeoutMillis: 30000,
+        },
       }),
     }),
 
